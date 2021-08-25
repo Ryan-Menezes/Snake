@@ -3,49 +3,58 @@
 #include <windows.h>
 #include <ctype.h>
 #include <conio.h>
-#include <conio.c>										// Biblioteca necessária para colorir o jogo
+#include <conio.c>												// Biblioteca necessária para colorir o jogo
 #include <locale.h>
 #include <time.h>
 #include <stdbool.h>
 
-#define LINHAS 25										// Número de linhas da matriz do mapa
-#define COLUNAS 70										// Número de colunas da matriz do mapa
-#define BLOCO 219										// Códico ASCII que representa um bloco, tanto para a parede do mapa, tando para o corpa da cobrinha
-#define BLOCO_MATRIZ 1									// Número que representa na matriz do mapa uma parede
-#define ESPACO_MATRIZ 0									// Número que representa na matriz do mapa um espaço vázio para a cobra se mover
-#define MACA 1											// Códico ASCII de um caracter que representa a maça do jogo
-#define SORTEIAYMACA() (rand() % (LINHAS - 2)) + 1		// Macro que sorteia uma posição Y para a maça
-#define SORTEIAXMACA() (rand() % (COLUNAS - 2)) + 1		// Macro que sorteia uma posição X para a maça
-#define FILERECORDISTAS "RECORDISTAS.bin"				// Nome do arquivo binário que armazena os recordistas do jogo
-#define TITULOJOGO "SNAKE"								// Nome do jogo
-#define VERSAO 1.0										// Versão do jogo
-#define VELOCIDADEINICIAL 150							// Velocidade inicial da cobrinha(Este valor será usado como parâmetro para a função Sleep)
-#define LIMITEVELOCIDADE 50								// Limite de velocidade que a cobrinha pode alcançar
-#define LIMITEMACAS 10									// Limite de maças sorteadas que ficarão no mapa para a cobrinha comer
-#define LIMPATELA() system("cls");						// Macro que limpa a tela do console(OBS: Por aqui você pode alterar o comando para limpar o console de acordo com seu S.O.)
+#define LINHAS 25												// Número de linhas da matriz do mapa
+#define COLUNAS 70												// Número de colunas da matriz do mapa
+#define BLOCO 219												// Códico ASCII que representa um bloco, tanto para a parede do mapa, tando para o corpa da cobrinha
+#define BLOCO_MATRIZ 1											// Número que representa na matriz do mapa uma parede
+#define ESPACO_MATRIZ 0											// Número que representa na matriz do mapa um espaço vázio para a cobra se mover
+#define MACA 1													// Códico ASCII de um caracter que representa a maça do jogo
+#define SORTEIAYMACA() (rand() % (LINHAS - 2)) + 1				// Macro que sorteia uma posição Y para a maça
+#define SORTEIAXMACA() (rand() % (COLUNAS - 2)) + 1				// Macro que sorteia uma posição X para a maça
+#define FILERECORDISTAS "RECORDISTAS.bin"						// Nome do arquivo binário que armazena os recordistas do jogo
+#define TITULOJOGO "SNAKE"										// Nome do jogo
+#define VERSAO 1.0												// Versão do jogo
+#define VELOCIDADEINICIAL 150									// Velocidade inicial da cobrinha(Este valor será usado como parâmetro para a função Sleep)
+#define LIMITEVELOCIDADE 50										// Limite de velocidade que a cobrinha pode alcançar
+#define LIMITEMACAS 10											// Limite de maças sorteadas que ficarão no mapa para a cobrinha comer
+#define LIMPATELA() system("cls");								// Macro que limpa a tela do console(OBS: Por aqui você pode alterar o comando para limpar o console de acordo com seu S.O.)
 
 // Constantes para as teclas direcionais
 
-#define TOP 'H'											// Tecla para cima
-#define BOTTOM 'P'										// Tecla para baixo
+typedef enum{
+	ENTER = 13,
+//	UP = 72,
+//	RIGHT = 75,
+//	LEFT = 77,
+//	DOWN = 80
+	UP = 'W',
+	RIGHT = 'A',
+	LEFT = 'D',
+	DOWN = 'S'
+}TECLAS;
 
-void inicia();											// Função que inicia o jogo
-void desenhaMapa();										// Função que desenha o mapa do jogo
-void draw();											// Função que desenha toda a parte gráfica do jogo
-void update();											// Função que atualiza posição da cobrinha, marca pontos, sorteia novas maças e etc.
-void loop();											// Loop do jogo, onde as funções draw() e update() serão chamadas recursivamente num loop até o final do jogo
-void menu();											// Função que desenha o menu do jogo
-void recodistasJogo();									// Função que apresenta os recordistas do jogo
-void ajuda();											// Função que apresenta as regras do jogo, tirando todas as dúvidas do jogador
-void info();											// Função que apresenta informações do jogo(Desenvolvedor e Versão)
-void buscaRecordistas();								// Função que lê o arquivo binário com os recordistas do jogo
-bool adicionaRecord();									// Função que adiciona um novo recordista
-char * pegarNome(char *, COLORS, COLORS);				// Função que pega o nome de um jogador que bateu um novo recorde
-void mensagem(bool);									// Função que apresenta uma mensagem de sucerro ou derrota ao jogador no final do jogo
-void tabelaGame(int, int, int, int, COLORS, COLORS);	// Função que desenha um retângulo colorido na tela
-void infoGame();										// Função que atualiza informações da gameplay durante o jogo									
-void limpaRastro();										// Função que limpa o rastro deixado pela cobra durante o jogo
-void gotoXY(int, int);									// Função que altera a posição do ponteiro do mouse
+void inicia();													// Função que inicia o jogo
+void desenhaMapa();												// Função que desenha o mapa do jogo
+void draw();													// Função que desenha toda a parte gráfica do jogo
+void update();													// Função que atualiza posição da cobrinha, marca pontos, sorteia novas maças e etc.
+void loop();													// Loop do jogo, onde as funções draw() e update() serão chamadas recursivamente num loop até o final do jogo
+void menu();													// Função que desenha o menu do jogo
+void recodistasJogo();											// Função que apresenta os recordistas do jogo
+void ajuda();													// Função que apresenta as regras do jogo, tirando todas as dúvidas do jogador
+void info();													// Função que apresenta informações do jogo(Desenvolvedor e Versão)
+void buscaRecordistas();										// Função que lê o arquivo binário com os recordistas do jogo
+bool adicionaRecord();											// Função que adiciona um novo recordista
+unsigned char * pegarNome(unsigned char *, COLORS, COLORS);		// Função que pega o nome de um jogador que bateu um novo recorde
+void mensagem(bool);											// Função que apresenta uma mensagem de sucerro ou derrota ao jogador no final do jogo
+void tabelaGame(int, int, int, int, COLORS, COLORS);			// Função que desenha um retângulo colorido na tela
+void infoGame();												// Função que atualiza informações da gameplay durante o jogo									
+void limpaRastro();												// Função que limpa o rastro deixado pela cobra durante o jogo
+void gotoXY(int, int);											// Função que altera a posição do ponteiro do mouse
 
 typedef struct{
 	int X, Y;
@@ -74,7 +83,7 @@ struct{bool jogando; int pontos; int total_macas; int macas_pegas; int nivel;}jo
 // Estrutura para armazenar os 10 recordistas do jogo
 
 typedef struct record{
-	char nome[4];
+	unsigned char nome[4];
 	int pontuacao;
 }RECORDS;
 
@@ -89,7 +98,7 @@ void main(int argc, char *argv[]) {
 	menu();
 }
 
-// --------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------------------------------------
 
 void inicia(){
 	LIMPATELA();
@@ -146,7 +155,7 @@ void inicia(){
 	loop();
 }
 
-// --------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------------------------------------
 
 void draw(){	
 	// Desenhando a cobrinha
@@ -184,7 +193,7 @@ void draw(){
 	Sleep(cobrinha.vel);
 }
 
-// --------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------------------------------------
 
 void update(){
 	srand(time(NULL));
@@ -192,25 +201,25 @@ void update(){
 	unsigned char tecla = '\0';
 	
 	if(kbhit()){
-		tecla = toupper(getch());
+		tecla = getch();
 		
-		switch(tecla){
-			case 'W':
+		switch(toupper(tecla)){
+			case UP:
 				cobrinha.direX = 0;
 				cobrinha.direY = 0;
 				cobrinha.direY = -1;
 				break;
-			case 'A':
+			case RIGHT:
 				cobrinha.direX = 0;
 				cobrinha.direY = 0;
 				cobrinha.direX = -1;
 				break;
-			case 'S':
+			case DOWN:
 				cobrinha.direX = 0;
 				cobrinha.direY = 0;
 				cobrinha.direY = 1;
 				break;
-			case 'D':
+			case LEFT:
 				cobrinha.direX = 0;
 				cobrinha.direY = 0;
 				cobrinha.direX = 1;
@@ -271,7 +280,7 @@ void update(){
 		if(cobrinha.posX == cobrinha.posicoes[i].X && cobrinha.posY == cobrinha.posicoes[i].Y && i != cobrinha.indiceProx - 1) jogo.jogando = false;
 }
 
-// --------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------------------------------------
 
 void loop(){
 	draw();
@@ -281,7 +290,7 @@ void loop(){
 	else mensagem(adicionaRecord());
 }
 
-// --------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------------------------------------
 
 void buscaRecordistas(){
 	free(recordistas);
@@ -299,7 +308,7 @@ void buscaRecordistas(){
 	fclose(arquivo);
 }
 
-// --------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------------------------------------
 
 bool adicionaRecord(){
 	buscaRecordistas();
@@ -379,14 +388,14 @@ bool adicionaRecord(){
 	return bateuRecorde;
 } 
 
-// --------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------------------------------------
 
 void mensagem(bool resultado){
 	const int X = 2;
 	const int Y = 2;
 	
 	// Mensagem que aparecerá na tela do jogador após o termino do jogo
-	char *msg = (resultado) ? "Congratulations !, you made it into the top 10!!!" : "GAME OVER!, You failed to enter the top 10 !!!";
+	unsigned char *msg = (resultado) ? "Congratulations !, you made it into the top 10!!!" : "GAME OVER!, You failed to enter the top 10 !!!";
 	
 	// Cores das bordas e fundo da caixa de mensagem configuradas de acordo com o resultado da partida
 	COLORS borda = (resultado) ? LIGHTGREEN : LIGHTRED;
@@ -408,7 +417,7 @@ void mensagem(bool resultado){
 	menu();
 }
 
-// --------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------------------------------------
 
 void menu(){
 	const int X = 2;
@@ -432,7 +441,7 @@ void menu(){
 		{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
 	};
 	
-	char *opMenu[] = {"New Game", "Records", "Help", "Info", "Exit"};
+	unsigned char *opMenu[] = {"New Game", "Records", "Help", "Info", "Exit"};
 	
 	for(int l = 0; l < L; l++){
 		gotoXY(X, Y + l);
@@ -455,20 +464,20 @@ void menu(){
 		printf("%s", opMenu[i]);
 	}
 	
-	while(tecla != 13){
+	while(tecla != ENTER){
 		gotoXY(CENTRO - 3, L + Y + pos + 1);
 		textcolor(GREEN); printf(">>"); textcolor(WHITE);
 		tecla = getch();
 		
 		switch(toupper(tecla)){
-			case TOP:
+			case UP:
 				if(pos > 0){
 					gotoXY(CENTRO - 3, L + Y + pos + 1);
 					printf("  ");
 					pos--;	
 				}
 				break;
-			case BOTTOM:
+			case DOWN:
 				if(pos < 4){
 					gotoXY(CENTRO - 3, L + Y + pos + 1);
 					printf("  ");
@@ -498,11 +507,11 @@ void menu(){
 	}
 }
 
-// --------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------------------------------------
 
 void recodistasJogo(){
 	const int X = 2, Y = 2, LARGURA = 29, ALTURA = 4;
-	char titulo[] = "GAME RECORDERS";
+	unsigned char titulo[] = "GAME RECORDERS";
 	
 	LIMPATELA();
 	
@@ -552,22 +561,22 @@ void recodistasJogo(){
 	menu();
 }
 
-// --------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------------------------------------
 
-char * pegarNome(char * titulo, COLORS borda, COLORS fundo){
+unsigned char * pegarNome(unsigned char * titulo, COLORS borda, COLORS fundo){
 	const int X = 2, Y = 2, LARGURA = strlen(titulo) + 3, ALTURA = 4, LIMITE = 5;
 	const int L = 2, C = 13;
 	int l, c, indice = 0, i;
-	char tecla = '\0';
-	char *username = (char *) calloc(4, sizeof(char *));
+	unsigned char tecla = '\0';
+	unsigned char *username = (unsigned char *) calloc(4, sizeof(unsigned char *));
 	
-	char letras[2][13] = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'};
+	unsigned char letras[2][13] = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'};
 	bool continua = false;
 	
 	do{
 		textbackground(BLACK);
 		LIMPATELA();
-		memset(username, 0, sizeof(char) * 4); 
+		memset(username, 0, sizeof(unsigned char) * 4); 
 		tecla = '\0';
 		indice = 0;
 
@@ -604,7 +613,7 @@ char * pegarNome(char * titulo, COLORS borda, COLORS fundo){
 			tecla = getch();
 			
 			switch(toupper(tecla)){
-				case 'W':
+				case UP:
 					textcolor(WHITE);
 					gotoXY((X + 2) * (c + 1), Y + ALTURA + l + 5);
 					printf("%c\b", letras[l][c]);
@@ -615,7 +624,7 @@ char * pegarNome(char * titulo, COLORS borda, COLORS fundo){
 					gotoXY((X + 2) * (c + 1), Y + ALTURA + l + 5);
 					printf("%c\b", letras[l][c]);
 					break;
-				case 'A':
+				case RIGHT:
 					textcolor(WHITE);
 					gotoXY((X + 2) * (c + 1), Y + ALTURA + l + 5);
 					printf("%c\b", letras[l][c]);
@@ -626,7 +635,7 @@ char * pegarNome(char * titulo, COLORS borda, COLORS fundo){
 					gotoXY((X + 2) * (c + 1), Y + ALTURA + l + 5);
 					printf("%c\b", letras[l][c]);
 					break;
-				case 'S':
+				case DOWN:
 					textcolor(WHITE);
 					gotoXY((X + 2) * (c + 1), Y + ALTURA + l + 5);
 					printf("%c\b", letras[l][c]);
@@ -637,7 +646,7 @@ char * pegarNome(char * titulo, COLORS borda, COLORS fundo){
 					gotoXY((X + 2) * (c + 1), Y + ALTURA + l + 5);
 					printf("%c\b", letras[l][c]);
 					break;
-				case 'D':
+				case LEFT:
 					textcolor(WHITE);
 					gotoXY((X + 2) * (c + 1), Y + ALTURA + l + 5);
 					printf("%c\b", letras[l][c]);
@@ -648,7 +657,7 @@ char * pegarNome(char * titulo, COLORS borda, COLORS fundo){
 					gotoXY((X + 2) * (c + 1), Y + ALTURA + l + 5);
 					printf("%c\b", letras[l][c]);
 					break;
-				case 13:
+				case ENTER:
 					username[indice] = letras[l][c];
 					indice++;
 					
@@ -683,22 +692,22 @@ char * pegarNome(char * titulo, COLORS borda, COLORS fundo){
 		gotoXY(X + 1, Y + 2 + i);
 		textcolor(RED); printf(">>"); textcolor(WHITE);
 		
-		while((tecla = getch()) != 13){
+		while((tecla = getch()) != ENTER){
 			switch(toupper(tecla)){
-				case 'P':
-					gotoXY(X + 1, Y + 2 + i);
-					printf("  ");
-					
-					if(i < 1) i++;
-					
-					gotoXY(X + 1, Y + 2 + i);
-					textcolor(RED); printf(">>"); textcolor(WHITE);
-					break;
-				case 'H':
+				case UP:
 					gotoXY(X + 1, Y + 2 + i);
 					printf("  ");
 					
 					if(i > 0) i--;
+					
+					gotoXY(X + 1, Y + 2 + i);
+					textcolor(RED); printf(">>"); textcolor(WHITE);
+					break;
+				case DOWN:
+					gotoXY(X + 1, Y + 2 + i);
+					printf("  ");
+					
+					if(i < 1) i++;
 					
 					gotoXY(X + 1, Y + 2 + i);
 					textcolor(RED); printf(">>"); textcolor(WHITE);
@@ -713,7 +722,7 @@ char * pegarNome(char * titulo, COLORS borda, COLORS fundo){
 	return username;
 }
 
-// --------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------------------------------------
 
 void ajuda(){
 	const int X = 2, Y = 2, LARGURA = 61, ALTURA = 13;
@@ -751,7 +760,7 @@ void ajuda(){
 	menu();
 }
 
-// --------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------------------------------------
 
 void info(){
 	const int X = 2, Y = 2, LARGURA = 50, ALTURA = 6;
@@ -774,7 +783,7 @@ void info(){
 	menu();
 }
 
-// --------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------------------------------------
 
 void tabelaGame(int A, int L, int X, int Y, COLORS CORBORDA, COLORS CORFUNDO){	
 	// Preenchimento
@@ -832,7 +841,7 @@ void tabelaGame(int A, int L, int X, int Y, COLORS CORBORDA, COLORS CORFUNDO){
 	textcolor(WHITE);
 }
 
-// --------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------------------------------------
 
 void infoGame(){
 	textbackground(RED);
@@ -845,7 +854,7 @@ void infoGame(){
 	textbackground(BLUE);
 }
 
-// --------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------------------------------------
 
 void desenhaMapa(){	
 	for(int l = 0; l < LINHAS; l++){
@@ -884,7 +893,7 @@ void limpaRastro(){
 	cobrinha.indiceProx++;
 }
 
-// --------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------------------------------------
 
 void gotoXY(int x, int y){
 	HANDLE h = GetStdHandle(STD_OUTPUT_HANDLE);
